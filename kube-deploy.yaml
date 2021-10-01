@@ -22,8 +22,8 @@ spec:
         name: labor
     spec:
       containers:
-      - image: ashunaev/labor-db.svc.cluster.local:3.0
-        name: labor
+      - name: labor
+        image: ashunaev/labor-db.svc.cluster.local:1.0
         volumeMounts:
         - mountPath: /var/www/html
           name: myvolume
@@ -89,14 +89,14 @@ spec:
       containers:
       - name: labor-db
         image: postgres:13.2
-      ports:
+        ports:
         - name: postgres
           containerPort: 5432
         volumeMounts:
           - mountPath: /var/lib/postgresql/data
-            name: myvolume
+            name: dbvolume
       volumes:
-      - name: myvolume
+      - name: dbvolume
         hostPath:
           path: /Final_Student_Project/data
           type: Directory

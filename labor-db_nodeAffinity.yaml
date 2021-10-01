@@ -1,0 +1,56 @@
+# DB label for node-1 and node-2 via nodeAffinity
+# kubectl label nodes node-1 region=database
+# kubectl label nodes node-2 region=all
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labor-db
+  template:
+    metadata:
+      labels:
+        name: labor-db
+    spec:
+      containers:
+      - name: labor-db
+        image: postgres:13.2
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: dbvolume
+      volumes:
+      - name: dbvolume
+        hostPath:
+          path: /Final_Student_Project/data
+          type: Directory
+      affinity:
+        nodeAffinity:
+		  #Pods will installed only on are nodes with labels "region=database"
+          requiredDuringSchedulingIgnoredDuringExecution:   
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                - database
+		  #Pods will try to installed on are nodes with labels "region=database", but if this not possible, that tried to install on another nodes.
+		  preferredDuringSchedulingIgnoredDuringExecution:   
+            - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                - database
+		 
+

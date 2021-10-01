@@ -2,8 +2,6 @@ version: "3.9"
 services:
   pghost:
     image: postgres:13.2
-#    networks:
-#    - my_network
     restart: always
     volumes:
       - /Final_Student_Project/data:/var/lib/postgresql/data
@@ -19,7 +17,3 @@ services:
       - "8080:8080"
     volumes:
       - /Final_Student_Project/php_page/:/var/www/html
-#networks:
-#  default:
-#    driver: bridge
-#    external: true
