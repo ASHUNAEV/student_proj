@@ -1,0 +1,37 @@
+# DB label for node-2 via nodeSelector
+# kubectl label nodes node-2 type=database
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labor-db
+  template:
+    metadata:
+      labels:
+        name: labor-db
+    spec:
+      containers:
+      - name: labor-db
+        image: postgres:13.2
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: dbvolume
+      volumes:
+      - name: dbvolume
+        hostPath:
+          path: /Final_Student_Project/data
+          type: Directory
+      nodeSelector:
+	    type=database
