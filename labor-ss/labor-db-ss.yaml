@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  serviceName: "labor-db"
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labor-db
+  template:
+    metadata:
+      labels:
+        name: labor-db
+    spec:
+      containers:
+      - name: labor-db
+        image: postgres:13.2
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: dbvolume
+      volumes:
+      - name: dbvolume
+        persistentVolumeClaim:
+          claimName: labor-db-pvc-db-0

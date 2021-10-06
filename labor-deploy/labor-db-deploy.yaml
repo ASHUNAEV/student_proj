@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labor-db
+  template:
+    metadata:
+      labels:
+        name: labor-db
+    spec:
+      containers:
+      - name: labor-db
+        image: postgres:13.2
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: dbvolume
+      volumes:
+      - name: dbvolume
+        hostPath:
+          path: /Final_Student_Project/data
+          type: Directory
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: region
+                operator: In
+                values:
+                - database
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  ports:
+    # the port that this service should serve on
+  - port: 5432
+    targetPort: 5432
+  selector:
+    name: labor-db

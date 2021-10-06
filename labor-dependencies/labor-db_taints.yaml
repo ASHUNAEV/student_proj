@@ -1,0 +1,52 @@
+# DB taint for node-1 and node-2 via Taints and Tolerations
+# kubectl taint nodes node-2 labor_db=true:NoSchedule
+# kubectl taint nodes node-1 labor_db=false:NoSchedule
+## kubectl taint nodes node-5 region=database:NoExecute
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labor-db
+  labels:
+    name: labor-db
+  namespace: student-proj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labor-db
+  template:
+    metadata:
+      labels:
+        name: labor-db
+    spec:
+      containers:
+      - name: labor-db
+        image: postgres:13.2
+        ports:
+        - name: postgres
+          containerPort: 5432
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: dbvolume
+      volumes:
+      - name: dbvolume
+        hostPath:
+          path: /Final_Student_Project/data
+          type: Directory
+		  #Pod will installed only on node-2, because of "operator: "Equal"" and "value:"true""
+      tolerations:
+      - key: "labor_db"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+		  #Another condition for example.
+		  #All pods without this toleration will be deleted on node-5
+      - key: "region"
+        operator: "Equals"
+        value: "database"
+        effect: "NoExecute"
+	  
+
+
